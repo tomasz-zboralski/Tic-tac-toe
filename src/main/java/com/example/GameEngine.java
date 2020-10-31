@@ -5,14 +5,16 @@ import java.util.Arrays;
 public class GameEngine {
 
     int[][] gameBoard;
+    int player;
+    int computer;
 
-    public GameEngine(int[][] gameBoard) {
+    public GameEngine(int[][] gameBoard, int player, int computer) {
         this.gameBoard = gameBoard;
+        this.player = player;
+        this.computer = computer;
     }
 
     public int checkLine(int[] line){
-        int player = 1;
-        int computer = 2;
 
         boolean isPlayerWinner = Arrays.stream(line)
                 .allMatch(n -> n == player);
@@ -42,6 +44,10 @@ public class GameEngine {
         }
 
         return sign;
+    }
+
+    public void playerMove(int row, int col){
+        gameBoard[row][col]= 1;
     }
 
     public int[] getRow0() {
@@ -93,7 +99,7 @@ public class GameEngine {
                 {0, 0, 0}
         };
 
-        GameEngine game = new GameEngine(gameBoard);
+        GameEngine game = new GameEngine(gameBoard,1,2);
         int x = game.checkLine(game.getRow1());
 
         System.out.println(x);

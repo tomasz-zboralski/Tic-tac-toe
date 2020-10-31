@@ -2,10 +2,13 @@ package com.example;
 
 import javafx.application.Application;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.effect.Reflection;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -24,12 +27,15 @@ public class TicTacToe extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         int[][] gameBoard = {
-                {1, 1, 2},
-                {2, 1, 1},
-                {2, 1, 1}
+                {0, 0, 0},
+                {0, 0, 0},
+                {0, 0, 0}
         };
 
-        GameEngine game = new GameEngine(gameBoard);
+        GameEngine game = new GameEngine(gameBoard, 1, 2);
+
+        GridPane gridpane = new GridPane();
+
 
 
         Group root = new Group();
@@ -48,8 +54,35 @@ public class TicTacToe extends Application {
         reflection.setFraction(0.5);
         text.setEffect(reflection);
 
-        Rectangle r = new Rectangle(100,100,600,600);
-        r.setFill(Color.rgb(36, 123, 160));
+//        Rectangle field1 = new Rectangle(100,100,600,600);
+//        field1.setFill(Color.rgb(36, 123, 160));
+
+        Rectangle field1 = new Rectangle(100,100,200,200);
+        field1.setFill(Color.rgb(36, 123, 160));
+
+        Rectangle field2 = new Rectangle(300,100,200,200);
+        field2.setFill(Color.rgb(36, 123, 160));
+
+        Rectangle field3 = new Rectangle(500,100,200,200);
+        field3.setFill(Color.rgb(36, 123, 160));
+
+        Rectangle field4 = new Rectangle(100,300,200,200);
+        field4.setFill(Color.rgb(36, 123, 160));
+
+        Rectangle field5 = new Rectangle(300,300,200,200);
+        field5.setFill(Color.rgb(36, 123, 160));
+
+        Rectangle field6 = new Rectangle(500,300,200,200);
+        field6.setFill(Color.rgb(36, 123, 160));
+
+        Rectangle field7 = new Rectangle(100,500,200,200);
+        field7.setFill(Color.rgb(36, 123, 160));
+
+        Rectangle field8 = new Rectangle(300,500,200,200);
+        field8.setFill(Color.rgb(36, 123, 160));
+
+        Rectangle field9 = new Rectangle(500,500,200,200);
+        field9.setFill(Color.rgb(36, 123, 160));
 
 
         // #board
@@ -132,6 +165,7 @@ public class TicTacToe extends Application {
         pos00.setX(150);
         pos00.setY(250);
         pos00.setText(game.getPosition(0,0));
+//        GridPane.setConstraints(pos00, 4, 4);
 
         Text pos01 = new Text();
         pos01.setFont(Font.font("Comic Sans MS", FontWeight.BOLD, FontPosture.REGULAR, 150));
@@ -191,7 +225,10 @@ public class TicTacToe extends Application {
 
 
         ObservableList<Node> list = root.getChildren();
-        list.addAll(r, text, line1, line2, line3, line4,
+        list.addAll(field1, field2, field3,
+                field4, field5, field6,
+                field7, field8, field9,
+                text, line1, line2, line3, line4,
                 pos00, pos01, pos02,
                 pos10, pos11, pos12,
                 pos20, pos21, pos22,
@@ -199,7 +236,76 @@ public class TicTacToe extends Application {
                 lineCol0, lineCol1, lineCol2,
                 lineRow0, lineRow1, lineRow2);
 
+//        gridpane.getChildren().addAll(pos00, pos01, pos02,
+//                pos10, pos11, pos12,
+//               pos20, pos21, pos22);
 
+
+        EventHandler<MouseEvent> eventHandler00 = e -> {
+            if (game.getGameBoard()[0][0] == 0){
+                game.playerMove(0,0);
+                pos00.setText(game.getPosition(0,0));
+            }
+        };
+
+        EventHandler<MouseEvent> eventHandler01 = e -> {
+            if (game.getGameBoard()[0][1] == 0){
+                game.playerMove(0,1);
+                pos01.setText(game.getPosition(0,1));
+            }
+        };
+        EventHandler<MouseEvent> eventHandler02 = e -> {
+            if (game.getGameBoard()[0][2] == 0){
+                game.playerMove(0,2);
+                pos02.setText(game.getPosition(0,2));
+            }
+        };
+        EventHandler<MouseEvent> eventHandler10 = e -> {
+            if (game.getGameBoard()[1][0] == 0){
+                game.playerMove(1,0);
+                pos10.setText(game.getPosition(1,0));
+            }
+        };
+        EventHandler<MouseEvent> eventHandler11 = e -> {
+            if (game.getGameBoard()[1][1] == 0){
+                game.playerMove(1,1);
+                pos11.setText(game.getPosition(1,1));
+            }
+        };
+        EventHandler<MouseEvent> eventHandler12 = e -> {
+            if (game.getGameBoard()[1][2] == 0){
+                game.playerMove(1,2);
+                pos12.setText(game.getPosition(1,2));
+            }
+        };
+        EventHandler<MouseEvent> eventHandler20 = e -> {
+            if (game.getGameBoard()[2][0] == 0){
+                game.playerMove(2,0);
+                pos20.setText(game.getPosition(2,0));
+            }
+        };
+        EventHandler<MouseEvent> eventHandler21 = e -> {
+            if (game.getGameBoard()[2][1] == 0){
+                game.playerMove(2,1);
+                pos21.setText(game.getPosition(2,1));
+            }
+        };
+        EventHandler<MouseEvent> eventHandler22 = e -> {
+            if (game.getGameBoard()[2][2] == 0){
+                game.playerMove(2,2);
+                pos22.setText(game.getPosition(2,2));
+            }
+        };
+
+        field1.addEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler00);
+        field2.addEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler01);
+        field3.addEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler02);
+        field4.addEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler10);
+        field5.addEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler11);
+        field6.addEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler12);
+        field7.addEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler20);
+        field8.addEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler21);
+        field9.addEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler22);
 
         primaryStage.setTitle("Tic-Tac-Toe");
         primaryStage.setScene(scene);
