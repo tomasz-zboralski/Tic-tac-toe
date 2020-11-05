@@ -17,9 +17,13 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.util.Map;
+
 public class TicTacToe extends Application {
     Group root;
     Group winLines = new Group();
+
+    GameEngine game = new GameEngine(1, 2);
 
 
     Text pos00 = new Text();
@@ -32,6 +36,8 @@ public class TicTacToe extends Application {
     Text pos21 = new Text();
     Text pos22 = new Text();
 
+    Text scoreBoard = new Text();
+
 
     public void drawMove(){
         pos00.setText(game.getPosition(0,0));
@@ -43,76 +49,71 @@ public class TicTacToe extends Application {
         pos20.setText(game.getPosition(2,0));
         pos21.setText(game.getPosition(2,1));
         pos22.setText(game.getPosition(2,2));
+        scoreBoard.setText(game.getScoreBoard());
     }
 
-    GameEngine game = new GameEngine(1, 2);
+
 
     public void drawWinnerLine(){
+        Map<String,Boolean> playerLine = game.getWinnerLines(game.getPlayer());
+        Map<String,Boolean> computerLine = game.getWinnerLines(game.getComputer());
 
         Line lineDiag0 = new Line(0, 0, 0, 0);
-        if (game.checkLine(game.getDiag0()) == 1 || game.checkLine(game.getDiag0()) == 2) {
+        if (playerLine.get("lineDiag0") || computerLine.get("lineDiag0")){//(game.checkLine(game.getDiag0()) == 1 || game.checkLine(game.getDiag0()) == 2) {
             lineDiag0 = new Line(150, 150, 650, 650);
             lineDiag0.setStroke(Color.rgb(27, 152, 224));
             lineDiag0.setStrokeWidth(30);
-            game.setNextMove(false);
         }
 
         Line lineDiag1 = new Line(0, 0, 0, 0);
-        if (game.checkLine(game.getDiag1()) == 1 || game.checkLine(game.getDiag1()) == 2) {
+        if (playerLine.get("lineDiag1") || computerLine.get("lineDiag1")) {
             lineDiag1 = new Line(150, 650, 650, 150);
             lineDiag1.setStroke(Color.rgb(27, 152, 224));
             lineDiag1.setStrokeWidth(30);
-            game.setNextMove(false);
         }
 
         // line |
         Line lineCol0 = new Line(0, 0, 0, 0);
-        if (game.checkLine(game.getCol0()) == 1 || game.checkLine(game.getCol0()) == 2) {
+        if (playerLine.get("lineCol0") || computerLine.get("lineCol0")) {
             lineCol0 = new Line(200, 150, 200, 650);
             lineCol0.setStroke(Color.rgb(27, 152, 224));
             lineCol0.setStrokeWidth(30);
-            game.setNextMove(false);
         }
 
         Line lineCol1 = new Line(0, 0, 0, 0);
-        if (game.checkLine(game.getCol1()) == 1 || game.checkLine(game.getCol1()) == 2) {
+        if (playerLine.get("lineCol1") || computerLine.get("lineCol1")) {
             lineCol1 = new Line(400, 150, 400, 650);
             lineCol1.setStroke(Color.rgb(27, 152, 224));
             lineCol1.setStrokeWidth(30);
-            game.setNextMove(false);
         }
 
         Line lineCol2 = new Line(0, 0, 0, 0);
-        if (game.checkLine(game.getCol2()) == 1 || game.checkLine(game.getCol2()) == 2) {
+        if (playerLine.get("lineCol2") || computerLine.get("lineCol2")) {
             lineCol2 = new Line(600, 150, 600, 650);
             lineCol2.setStroke(Color.rgb(27, 152, 224));
             lineCol2.setStrokeWidth(30);
-            game.setNextMove(false);
         }
 
         //row1 --
         Line lineRow0 = new Line(0, 0, 0, 0);
-        if (game.checkLine(game.getRow0()) == 1 || game.checkLine(game.getRow0()) == 2) {
+        if (playerLine.get("lineRow0") || computerLine.get("lineRow0")) {
             lineRow0 = new Line(150, 200, 650, 200);
             lineRow0.setStroke(Color.rgb(27, 152, 224));
             lineRow0.setStrokeWidth(30);
-            game.setNextMove(false);
         }
 
         Line lineRow1 = new Line(0, 0, 0, 0);
-        if (game.checkLine(game.getRow1()) == 1 || game.checkLine(game.getRow1()) == 2) {
+        if (playerLine.get("lineRow1") || computerLine.get("lineRow1")) {
             lineRow1 = new Line(150, 400, 650, 400);
             lineRow1.setStroke(Color.rgb(27, 152, 224));
             lineRow1.setStrokeWidth(30);
-            game.setNextMove(false);
         }
 
         Line lineRow2 = new Line(0, 0, 0, 0);
-        if (game.checkLine(game.getRow2()) == 1 || game.checkLine(game.getRow2()) == 2) {
+        if (playerLine.get("lineRow2") || computerLine.get("lineRow2")) {
             lineRow2 = new Line(150, 600, 650, 600);
             lineRow2.setStroke(Color.rgb(27, 152, 224));
             lineRow2.setStrokeWidth(30);
-            game.setNextMove(false);
         }
 
         winLines.getChildren().addAll(lineDiag0, lineDiag1,
@@ -268,6 +269,12 @@ public class TicTacToe extends Application {
 
         });
 
+        scoreBoard.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 25));
+        scoreBoard.setFill(Color.rgb(130, 197, 233));
+        scoreBoard.setX(300);
+        scoreBoard.setY(750);
+        scoreBoard.setText(game.getScoreBoard());
+
 
 
 
@@ -342,7 +349,7 @@ public class TicTacToe extends Application {
                 text, line1, line2, line3, line4,
                 pos00, pos01, pos02,
                 pos10, pos11, pos12,
-                pos20, pos21, pos22, button, winLines);
+                pos20, pos21, pos22, button, winLines, scoreBoard);
 
         primaryStage.setTitle("Tic-Tac-Toe");
         primaryStage.setScene(scene);

@@ -1,7 +1,6 @@
 package com.example;
 
-import java.util.Arrays;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.IntStream;
 
 public class GameEngine {
@@ -13,6 +12,8 @@ public class GameEngine {
 
     int player;
     int computer;
+    int playerScore = 0;
+    int computerScore = 0;
     boolean nextMove = true;
 
     public GameEngine(int player, int computer) {
@@ -20,35 +21,62 @@ public class GameEngine {
         this.computer = computer;
     }
 
-    public int checkLine(int[] line){
-
-        boolean isPlayerWinner = Arrays.stream(line)
-                .allMatch(n -> n == player);
-
-        boolean isComputerWinner = Arrays.stream(line)
-                .allMatch(n -> n == computer);
-
-        if (isPlayerWinner){
+    public void isWinner(){
+        if (getWinnerLines(player).containsValue(true)) {
+            playerScore++;
             nextMove = false;
-            return player;
-        } else if (isComputerWinner) {
-            nextMove = false;
-            return computer;
-        } else {
-            return 0;
         }
+        if (getWinnerLines(computer).containsValue(true)){
+            computerScore++;
+            nextMove = false;
+        }
+
     }
 
-    public void getWinner(){
-        int resultDiag0 = checkLine(getDiag0());
-        int resultDiag1 = checkLine(getDiag1());
-        int resultRow0 = checkLine(getRow0());
-        int resultRow1 = checkLine(getRow1());
-        int resultRow2 = checkLine(getRow2());
-        int resultCol0 = checkLine(getCol0());
-        int resultCol1 = checkLine(getCol1());
-        int resultCol2 = checkLine(getCol2());
+    public Map<String, Boolean> getWinnerLines(int p){
 
+        boolean lineDiag0 = IntStream.range(0,3)
+                .map(n -> gameBoard[n][n])
+                .allMatch(n -> n == p);
+
+        boolean lineDiag1 = IntStream.range(0,3)
+                .boxed()
+                .sorted(Collections.reverseOrder())
+                .map(n -> gameBoard[n][2-n])
+                .allMatch(n -> n == p);
+
+        boolean lineCol0 = IntStream.range(0,3)
+                .map(n -> gameBoard[n][0])
+                .allMatch(n -> n == p);
+
+        boolean lineCol1 = IntStream.range(0,3)
+                .map(n -> gameBoard[n][1])
+                .allMatch(n -> n == p);
+
+        boolean lineCol2 = IntStream.range(0,3)
+                .map(n -> gameBoard[n][2])
+                .allMatch(n -> n == p);
+
+        boolean lineRow0 = Arrays.stream(gameBoard[0])
+                .allMatch(n -> n == p);
+
+        boolean lineRow1 = Arrays.stream(gameBoard[1])
+                .allMatch(n -> n == p);
+
+        boolean lineRow2 = Arrays.stream(gameBoard[2])
+                .allMatch(n -> n == p);
+
+        Map<String, Boolean> winnerLines = new HashMap<>();
+        winnerLines.put("lineDiag0", lineDiag0);
+        winnerLines.put("lineDiag1", lineDiag1);
+        winnerLines.put("lineCol0", lineCol0);
+        winnerLines.put("lineCol1", lineCol1);
+        winnerLines.put("lineCol2", lineCol2);
+        winnerLines.put("lineRow0", lineRow0);
+        winnerLines.put("lineRow1", lineRow1);
+        winnerLines.put("lineRow2", lineRow2);
+
+        return winnerLines;
     }
 
     public void restartGame() {
@@ -77,7 +105,7 @@ public class GameEngine {
             int row = rand.nextInt(3);
             int col = rand.nextInt(3);
             System.out.println(row + "" + col);
-            if (gameBoard[row][col] == 0 && nextMove){
+            if (gameBoard[row][col] == 0){
                 gameBoard[row][col] = 2;
                 picked = true;
             }
@@ -88,10 +116,6 @@ public class GameEngine {
                 picked = true;
             }
             System.out.println(contains);
-
-
-
-
         }
     }
 
@@ -99,53 +123,45 @@ public class GameEngine {
 
         if (nextMove && gameBoard[row][col] == 0){
             gameBoard[row][col]= 1;
-            getWinner();
+            isWinner();
             if (nextMove){
                 computerMove();
+                isWinner();
             }
-
-
-
         }
     }
 
-    public int[] getRow0() {
-        return gameBoard[0];
+    public int getPlayer() {
+        return player;
     }
 
-    public int[] getRow1() {
-        return gameBoard[1];
+    public int getComputer() {
+        return computer;
     }
 
-    public int[] getRow2() {
-        return gameBoard[2];
-    }
-
-    public int[] getCol0() {
-        return new int[]{gameBoard[0][0], gameBoard[1][0], gameBoard[2][0]};
-    }
-
-    public int[] getCol1() {
-        return new int[]{gameBoard[0][1], gameBoard[1][1], gameBoard[2][1]};
-    }
-
-    public int[] getCol2() {
-        return new int[]{gameBoard[0][2], gameBoard[1][2], gameBoard[2][2]};
-    }
-
-    public int[] getDiag0() {
-        return new int[]{gameBoard[0][0], gameBoard[1][1], gameBoard[2][2]};
-    }
-
-    public int[] getDiag1() {
-        return new int[]{gameBoard[0][2], gameBoard[1][1], gameBoard[2][0]};
-    }
-
-    public void setNextMove(boolean nextMove) {
-        this.nextMove = nextMove;
+    public String getScoreBoard(){
+        return "Player [" + playerScore +"] : [" + computerScore + "] Computer ";
     }
 
     public static void main(String[] args) {
+//        Map<String, Boolean> winnerLines = Map.of("diag0", false, "diag1",false);
+//        winnerLines.forEach((key, value) -> System.out.println(key + ":" + value));
+//
+//        int[][] board = {
+//                {0, 0, 1},
+//                {0, 1, 0},
+//                {1, 0, 1}
+//        };
+//
+//
+//        boolean lineDiag0 = IntStream.range(0,3) // iterate(3, i -> i - 1) //
+//                //.limit(3)
+//                .boxed() // Converts Intstream to Stream<Integer>
+//                .sorted(Collections.reverseOrder())
+//
+//                .map(n -> board[n][2-n])
+//                .allMatch(n -> n == 1 && n==2);
+//        System.out.println(lineDiag0);
 
 //        int[] row0 = gameBoard[0];
 //        int[] row1 = gameBoard[1];
