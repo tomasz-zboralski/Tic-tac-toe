@@ -80,15 +80,11 @@ public class TicTacToe extends Application {
     }
 
     public void drawClickableFields(){
-
-        for (int i = 0; i <fields.length; i++){
-            fields[i] = new Rectangle(200, 200);
-            fields[i].setFill(Color.rgb(36, 123, 160));
-        }
-
         int x=0;
         for (int i = 0; i < 3; i++){
             for (int n=0; n<3; n++){
+                fields[x] = new Rectangle(200, 200);
+                fields[x].setFill(Color.rgb(36, 123, 160));
                 int a = i;
                 int b = n;
                 fields[x].setOnMouseClicked(t -> {
@@ -97,23 +93,15 @@ public class TicTacToe extends Application {
                     drawWinnerLine();
                 });
                 gridPaneFields.add(fields[x],n,i);
+
+                moves[x] = new Text();
+                moves[x].setFont(Font.font("Comic Sans MS", FontWeight.BOLD, FontPosture.REGULAR, 150));
+                moves[x].setFill(Color.rgb(130, 197, 233));
+                moves[x].setText(game.markPosition(n,i));
+                gridPaneFields.add(moves[x],n,i);
+                GridPane.setHalignment(moves[x], HPos.CENTER);
+
                 x++;
-            }
-        }
-
-        for (int i = 0; i <moves.length; i++){
-            moves[i] = new Text();
-            moves[i].setFont(Font.font("Comic Sans MS", FontWeight.BOLD, FontPosture.REGULAR, 150));
-            moves[i].setFill(Color.rgb(130, 197, 233));
-        }
-
-        int y = 0;
-        for (int i = 0; i < 3; i++){
-            for (int n=0; n<3; n++){
-                moves[y].setText(game.markPosition(n,i));
-                gridPaneFields.add(moves[y],n,i);
-                GridPane.setHalignment(moves[y], HPos.CENTER);
-                y++;
             }
         }
     }
