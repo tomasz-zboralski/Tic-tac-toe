@@ -35,46 +35,34 @@ public class GameEngine {
 
     public Map<String, Boolean> getWinnerLines(int p){
 
+        Map<String, Boolean> winnerLines = new HashMap<>();
+
+        for(int i=0; i<3; i++){
+            int x = i;
+
+            boolean resultCol = IntStream.range(0,3)
+                .map(n -> gameBoard[n][x])
+                .allMatch(n -> n == p);
+
+            winnerLines.put("lineCol" + i, resultCol);
+
+            boolean resultRow = Arrays.stream(gameBoard[x])
+                .allMatch(n -> n == p);
+
+            winnerLines.put("lineRow" + i, resultRow);
+        }
+
         boolean lineDiag0 = IntStream.range(0,3)
                 .map(n -> gameBoard[n][n])
                 .allMatch(n -> n == p);
+        winnerLines.put("lineDiag0", lineDiag0);
 
         boolean lineDiag1 = IntStream.range(0,3)
                 .boxed()
                 .sorted(Collections.reverseOrder())
                 .map(n -> gameBoard[n][2-n])
                 .allMatch(n -> n == p);
-
-        boolean lineCol0 = IntStream.range(0,3)
-                .map(n -> gameBoard[n][0])
-                .allMatch(n -> n == p);
-
-        boolean lineCol1 = IntStream.range(0,3)
-                .map(n -> gameBoard[n][1])
-                .allMatch(n -> n == p);
-
-        boolean lineCol2 = IntStream.range(0,3)
-                .map(n -> gameBoard[n][2])
-                .allMatch(n -> n == p);
-
-        boolean lineRow0 = Arrays.stream(gameBoard[0])
-                .allMatch(n -> n == p);
-
-        boolean lineRow1 = Arrays.stream(gameBoard[1])
-                .allMatch(n -> n == p);
-
-        boolean lineRow2 = Arrays.stream(gameBoard[2])
-                .allMatch(n -> n == p);
-
-        Map<String, Boolean> winnerLines = new HashMap<>();
-        winnerLines.put("lineDiag0", lineDiag0);
         winnerLines.put("lineDiag1", lineDiag1);
-        winnerLines.put("lineCol0", lineCol0);
-        winnerLines.put("lineCol1", lineCol1);
-        winnerLines.put("lineCol2", lineCol2);
-        winnerLines.put("lineRow0", lineRow0);
-        winnerLines.put("lineRow1", lineRow1);
-        winnerLines.put("lineRow2", lineRow2);
 
         return winnerLines;
     }
@@ -95,27 +83,26 @@ public class GameEngine {
         return sign;
     }
     public void computerMove(){
-        boolean picked = false;
+        boolean pickedField = false;
         Random rand = new Random();
 
 
 
-        while (!picked && nextMove){
+        while (!pickedField && nextMove){
 
             int row = rand.nextInt(3);
             int col = rand.nextInt(3);
             System.out.println(row + "" + col);
             if (gameBoard[row][col] == 0){
                 gameBoard[row][col] = 2;
-                picked = true;
+                pickedField = true;
             }
 
             IntStream stream = Arrays.stream(gameBoard).flatMapToInt(Arrays::stream);
-            boolean contains = stream.anyMatch(x -> x == 0);
-            if (!contains){
-                picked = true;
+            boolean isEmptyField = stream.anyMatch(x -> x == 0);
+            if (!isEmptyField){
+                pickedField = true;
             }
-            System.out.println(contains);
         }
     }
 
@@ -143,7 +130,7 @@ public class GameEngine {
         return "Player [" + playerScore +"] : [" + computerScore + "] Computer ";
     }
 
-    public static void main(String[] args) {
+//    public static void main(String[] args) {
 //        Map<String, Boolean> winnerLines = Map.of("diag0", false, "diag1",false);
 //        winnerLines.forEach((key, value) -> System.out.println(key + ":" + value));
 //
@@ -182,5 +169,7 @@ public class GameEngine {
         //int x = game.checkLine(game.getRow1());
 
        //System.out.println(x);
-    }
+
+
+//    }
 }
