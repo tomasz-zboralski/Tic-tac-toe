@@ -58,7 +58,6 @@ public class TicTacToe extends Application {
     }
 
     public void drawGame(){
-
         title.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 50));
         title.setFill(Color.rgb(130, 197, 233));
         title.setText("Tic-Tac-Toe Game");

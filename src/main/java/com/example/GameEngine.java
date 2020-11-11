@@ -33,6 +33,11 @@ public class GameEngine {
     }
 
     public Map<String, Boolean> getWinnerLines(int p){
+        return getWinnerLines(p, gameBoard);
+    }
+
+    public Map<String, Boolean> getWinnerLines(int p, int[][] board){
+
 
         Map<String, Boolean> winnerLines = new HashMap<>();
 
@@ -40,26 +45,26 @@ public class GameEngine {
             int x = i;
 
             boolean resultCol = IntStream.range(0,3)
-                .map(n -> gameBoard[n][x])
+                .map(n -> board[n][x])
                 .allMatch(n -> n == p);
 
             winnerLines.put("lineCol" + i, resultCol);
 
-            boolean resultRow = Arrays.stream(gameBoard[x])
+            boolean resultRow = Arrays.stream(board[x])
                 .allMatch(n -> n == p);
 
             winnerLines.put("lineRow" + i, resultRow);
         }
 
         boolean lineDiag0 = IntStream.range(0,3)
-                .map(n -> gameBoard[n][n])
+                .map(n -> board[n][n])
                 .allMatch(n -> n == p);
         winnerLines.put("lineDiag0", lineDiag0);
 
         boolean lineDiag1 = IntStream.range(0,3)
                 .boxed()
                 .sorted(Collections.reverseOrder())
-                .map(n -> gameBoard[n][2-n])
+                .map(n -> board[n][2-n])
                 .allMatch(n -> n == p);
         winnerLines.put("lineDiag1", lineDiag1);
 
@@ -85,15 +90,42 @@ public class GameEngine {
         boolean pickedField = false;
         Random rand = new Random();
 
-        while (!pickedField){
+        int[][] temporaryBoard = Arrays.stream(gameBoard).map(int[]::clone).toArray(int[][]::new);
 
+        // check if the move can win
+        for (int i = 0; i < 3; i++) {
+            for (int n = 0; n < 3; n++) {
+
+                if (temporaryBoard[i][n] == 0 && !pickedField) {
+                    temporaryBoard[i][n] = computer;
+                    if (getWinnerLines(computer, temporaryBoard).containsValue(true)){
+                        gameBoard[i][n] = computer;
+                        pickedField = true;
+                    } else {
+                        temporaryBoard[i][n] = player;
+                    }
+                    if (getWinnerLines(player, temporaryBoard).containsValue(true)) {
+                        gameBoard[i][n] = computer;
+                        pickedField = true;
+                    } else {
+                        temporaryBoard[i][n] = 0;
+                    }
+                }
+            }
+        }
+
+        // pick randomly if smart move impossible
+        while (!pickedField){
             int row = rand.nextInt(3);
             int col = rand.nextInt(3);
+
             if (gameBoard[row][col] == 0){
                 gameBoard[row][col] = 2;
+
                 pickedField = true;
             }
 
+            // check if board is full
             IntStream stream = Arrays.stream(gameBoard).flatMapToInt(Arrays::stream);
             boolean isEmptyField = stream.anyMatch(x -> x == 0);
             if (!isEmptyField){
