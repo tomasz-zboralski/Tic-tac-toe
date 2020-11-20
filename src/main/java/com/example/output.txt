@@ -1,0 +1,6 @@
+Tomek: 30
+Antek: 40
+User666: 100
+Krychu: 400
+Krystyna: 800
+Grażka: 50

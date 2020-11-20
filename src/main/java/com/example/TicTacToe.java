@@ -244,7 +244,7 @@ public class TicTacToe extends Application {
 
     public void saveRanking(){
         try {
-            FileWriter myWriter = new FileWriter("src/main/resources/output.txt", true);
+            FileWriter myWriter = new FileWriter("src/main/java/com/example/output.txt", true);
             if (game.getPoints() > 0){
                 myWriter.write(userName + ": " + game.getPoints() + "\n");
             }
@@ -257,7 +257,7 @@ public class TicTacToe extends Application {
 
     public void readRanking(){
         try {
-            File myObj = new File("src/main/resources/output.txt");
+            File myObj = new File("src/main/java/com/example/output.txt");
             Scanner myReader = new Scanner(myObj);
             while (myReader.hasNextLine()) {
                 String data = myReader.nextLine();
