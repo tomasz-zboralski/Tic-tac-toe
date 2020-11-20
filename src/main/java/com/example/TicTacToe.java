@@ -6,7 +6,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -16,90 +16,107 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+
+import java.io.*;
 import java.util.Map;
+import java.util.Scanner;
 
 public class TicTacToe extends Application {
 
-    GameEngine game;
+    private GameEngine game = new GameEngine('o', 'x');
 
-    Text title = new Text();
-    Rectangle[] fields = new Rectangle[10];
-    Text[] moves = new Text[10];
-    Button buttonNewGame = new Button();
-    Text scoreBoard = new Text();
+    private final Text TITLE = new Text();
+    private final Rectangle[] FIELDS = new Rectangle[10];
+    private final Text[] MOVES = new Text[10];
+    private final Button BUTTON_NEXT_ROUND = new Button("Next Round");
+    private final Button BUTTON_NEW_GAME = new Button("New Game");
+    private final Text SCORE_BOARD = new Text();
+    private final RadioButton LEVEL_BUTTON_EASY = new RadioButton("Easy");
+    private final RadioButton LEVEL_BUTTON_HARD = new RadioButton("Hard");
+    private final TextField USER_NAME_TEXT_FIELD = new TextField("User");
+    private String userName = USER_NAME_TEXT_FIELD.getText();
 
-    BorderPane mainGrid = new BorderPane();
-    GridPane gridPaneFields = new GridPane();
-    StackPane StackPaneCenter = new StackPane();
-    Group winLines = new Group();
-    HBox hBoxBottom = new HBox();
+    private final BorderPane MAIN_GRID = new BorderPane();
+    private final GridPane GRID_PANE_FIELDS = new GridPane();
+    private final StackPane STACK_PANE_CENTER = new StackPane();
+    private final GridPane SETTINGS_WINDOW_PANE = new GridPane();
+    private final HBox H_BOX_BOTTOM = new HBox();
 
-    public void drawGame(){
+    private final Group WIN_LINES = new Group();
+    private final ToggleGroup CHAR_BUTTONS_GROUP = new ToggleGroup();
+    private final ToggleButton O_BUTTON = new ToggleButton("O");
+    private final ToggleButton X_BUTTON = new ToggleButton("X");
+    private final ToggleGroup RADIO_LEVEL_GROUP = new ToggleGroup();
+
+    private final ListView<String> HIGH_SCORE_LIST_VIEW = new ListView<>();
+
+    Scene mainScene = new Scene(MAIN_GRID, 800, 800, Color.rgb(0, 100, 148));
+    Scene settingsScene = new Scene(SETTINGS_WINDOW_PANE, 800, 800, Color.rgb(0, 100, 148));
+
+    public void drawMainGame(){
         createAllGrids();
 
-        title.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 50));
-        title.setFill(Color.rgb(130, 197, 233));
-        title.setText("Tic-Tac-Toe Game");
+        TITLE.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 50));
+        TITLE.setFill(Color.rgb(130, 197, 233));
+        TITLE.setText("Tic-Tac-Toe Game");
 
         drawClickableFields();
 
-        buttonNewGame.setText("New Game");
-        buttonNewGame.setPrefSize(100, 50);
-        buttonNewGame.setOnAction((e) -> {
-            winLines.getChildren().clear();
+        BUTTON_NEXT_ROUND.setOnAction((e) -> {
+            WIN_LINES.getChildren().clear();
             game.restartGame();
             drawMove();
         });
 
-        scoreBoard.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 25));
-        scoreBoard.setFill(Color.rgb(130, 197, 233));
-        scoreBoard.setY(50);
-        scoreBoard.setText(game.getScoreBoard());
+        SCORE_BOARD.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 25));
+        SCORE_BOARD.setFill(Color.rgb(130, 197, 233));
+        SCORE_BOARD.setY(50);
+        SCORE_BOARD.setText(userName + game.getScoreBoard());
     }
 
     public void createAllGrids(){
-        mainGrid.setStyle("-fx-background-color: #006594");
-        mainGrid.setTop(title);
-        BorderPane.setAlignment(title, Pos.CENTER);
-        mainGrid.setCenter(StackPaneCenter);
-        mainGrid.setBottom(hBoxBottom);
-        BorderPane.setAlignment(hBoxBottom, Pos.TOP_CENTER);
+        MAIN_GRID.setStyle("-fx-background-color: #006594");
+        MAIN_GRID.setTop(TITLE);
+        BorderPane.setAlignment(TITLE, Pos.CENTER);
+        MAIN_GRID.setCenter(STACK_PANE_CENTER);
+        MAIN_GRID.setBottom(H_BOX_BOTTOM);
+        BorderPane.setAlignment(H_BOX_BOTTOM, Pos.TOP_CENTER);
 
-        StackPaneCenter.getChildren().addAll(gridPaneFields, winLines);
+        STACK_PANE_CENTER.getChildren().addAll(GRID_PANE_FIELDS, WIN_LINES);
 
-        gridPaneFields.setMinSize(400, 200);
-        gridPaneFields.setPadding(new Insets(75, 10, 50, 10));
-        gridPaneFields.setVgap(5);
-        gridPaneFields.setHgap(15);
-        gridPaneFields.setAlignment(Pos.CENTER);
+        GRID_PANE_FIELDS.setMinSize(400, 200);
+        GRID_PANE_FIELDS.setPadding(new Insets(75, 10, 50, 10));
+        GRID_PANE_FIELDS.setVgap(5);
+        GRID_PANE_FIELDS.setHgap(15);
+        GRID_PANE_FIELDS.setAlignment(Pos.CENTER);
 
-        hBoxBottom.getChildren().addAll(buttonNewGame, scoreBoard);
-        hBoxBottom.setAlignment(Pos.CENTER);
-        HBox.setMargin(buttonNewGame,new Insets(20, 70, 40, 20));
-        HBox.setMargin(scoreBoard,new Insets(20, 20, 40, 20));
+        H_BOX_BOTTOM.getChildren().addAll(BUTTON_NEXT_ROUND, SCORE_BOARD);
+        H_BOX_BOTTOM.setAlignment(Pos.CENTER);
+        HBox.setMargin(BUTTON_NEXT_ROUND,new Insets(20, 20, 40, 20));
+        HBox.setMargin(SCORE_BOARD,new Insets(20, 20, 40, 20));
     }
 
     public void drawClickableFields(){
         int x=0;
         for (int i = 0; i < 3; i++){
             for (int n=0; n<3; n++){
-                fields[x] = new Rectangle(200, 200);
-                fields[x].setFill(Color.rgb(36, 123, 160));
+                FIELDS[x] = new Rectangle(200, 200);
+                FIELDS[x].setFill(Color.rgb(36, 123, 160));
                 int a = i;
                 int b = n;
-                fields[x].setOnMouseClicked(t -> {
+                FIELDS[x].setOnMouseClicked(t -> {
                     game.userMove(a,b);
                     drawMove();
                     drawWinLine();
                 });
-                gridPaneFields.add(fields[x],n,i);
+                GRID_PANE_FIELDS.add(FIELDS[x],n,i);
 
-                moves[x] = new Text();
-                moves[x].setFont(Font.font("Comic Sans MS", FontWeight.BOLD, FontPosture.REGULAR, 150));
-                moves[x].setFill(Color.rgb(130, 197, 233));
-                moves[x].setText(positionToString(n,i));
-                gridPaneFields.add(moves[x],n,i);
-                GridPane.setHalignment(moves[x], HPos.CENTER);
+                MOVES[x] = new Text();
+                MOVES[x].setFont(Font.font("Comic Sans MS", FontWeight.BOLD, FontPosture.REGULAR, 150));
+                MOVES[x].setFill(Color.rgb(130, 197, 233));
+                MOVES[x].setText(positionToString(n,i));
+                GRID_PANE_FIELDS.add(MOVES[x],n,i);
+                GridPane.setHalignment(MOVES[x], HPos.CENTER);
 
                 x++;
             }
@@ -115,11 +132,11 @@ public class TicTacToe extends Application {
         int x = 0;
         for (int i = 0; i < 3; i++) {
             for (int n = 0; n < 3; n++) {
-                moves[x].setText(positionToString(i, n));
+                MOVES[x].setText(positionToString(i, n));
                 x ++;
             }
         }
-        scoreBoard.setText(game.getScoreBoard());
+        SCORE_BOARD.setText(userName + game.getScoreBoard());
     }
 
     public void drawWinLine(){
@@ -157,18 +174,121 @@ public class TicTacToe extends Application {
             winnerLine.setStrokeWidth(30);
         }
 
-        winLines.getChildren().addAll(winnerLine);
+        WIN_LINES.getChildren().addAll(winnerLine);
+    }
+
+    public void drawSettingsWindow(){
+        O_BUTTON.setFont(Font.font("Comic Sans MS", FontWeight.BOLD, FontPosture.REGULAR, 50));
+        O_BUTTON.setStyle("-fx-text-fill: #247ba0");
+        X_BUTTON.setFont(Font.font("Comic Sans MS", FontWeight.BOLD, FontPosture.REGULAR, 50));
+        X_BUTTON.setStyle("-fx-text-fill: #247ba0");
+        O_BUTTON.setToggleGroup(CHAR_BUTTONS_GROUP);
+        X_BUTTON.setToggleGroup(CHAR_BUTTONS_GROUP);
+        O_BUTTON.setUserData("o");
+        X_BUTTON.setUserData("x");
+        O_BUTTON.setSelected(true);
+
+        LEVEL_BUTTON_EASY.setToggleGroup(RADIO_LEVEL_GROUP);
+        LEVEL_BUTTON_HARD.setToggleGroup(RADIO_LEVEL_GROUP);
+        LEVEL_BUTTON_EASY.setUserData(false);
+        LEVEL_BUTTON_HARD.setUserData(true);
+        LEVEL_BUTTON_HARD.setSelected(true);
+
+        readRanking();
+
+        HIGH_SCORE_LIST_VIEW.setPrefWidth(5060);
+        HIGH_SCORE_LIST_VIEW.setPrefHeight(5000);
+        HIGH_SCORE_LIST_VIEW.setMouseTransparent(true);
+        HIGH_SCORE_LIST_VIEW.setFocusTraversable(false);
+
+        Label labelChar = new Label("Character:");
+        Label levelLabel = new Label("Level:");
+        Label enterNameLabel = new Label("Name:");
+        labelChar.setTextFill(Color.rgb(255,255,255));
+        levelLabel.setTextFill(Color.rgb(255,255,255));
+        enterNameLabel.setTextFill(Color.rgb(255,255,255));
+        LEVEL_BUTTON_HARD.setTextFill(Color.rgb(255,255,255));
+        LEVEL_BUTTON_EASY.setTextFill(Color.rgb(255,255,255));
+        USER_NAME_TEXT_FIELD.setMaxWidth(235);
+
+        SETTINGS_WINDOW_PANE.setStyle("-fx-background-color: #006594");
+        SETTINGS_WINDOW_PANE.setPadding(new Insets(10, 10,10,200));
+        SETTINGS_WINDOW_PANE.setVgap(20);
+        SETTINGS_WINDOW_PANE.setHgap(20);
+
+        SETTINGS_WINDOW_PANE.add(HIGH_SCORE_LIST_VIEW, 0,0,3,10);
+        SETTINGS_WINDOW_PANE.add(labelChar,0,10);
+        SETTINGS_WINDOW_PANE.add(O_BUTTON, 1,10);
+        SETTINGS_WINDOW_PANE.add(X_BUTTON,2,10);
+        SETTINGS_WINDOW_PANE.add(levelLabel, 0, 11);
+        SETTINGS_WINDOW_PANE.add(LEVEL_BUTTON_EASY, 1,11);
+        SETTINGS_WINDOW_PANE.add(LEVEL_BUTTON_HARD, 2, 11);
+        SETTINGS_WINDOW_PANE.add(enterNameLabel,0,12);
+        SETTINGS_WINDOW_PANE.add(USER_NAME_TEXT_FIELD,1,12,10,1);
+        SETTINGS_WINDOW_PANE.add(BUTTON_NEW_GAME, 1,13);
+    }
+
+    public void newGame() {
+        WIN_LINES.getChildren().clear();
+        game.restartGame();
+        char userCharChoice = CHAR_BUTTONS_GROUP.getSelectedToggle().getUserData().toString().charAt(0);
+        char determinateCompChar = 'o';
+        if (userCharChoice == 'o'){
+            determinateCompChar = 'x';
+        }
+        game = new GameEngine(userCharChoice, determinateCompChar);
+        game.setLevelHard((Boolean) RADIO_LEVEL_GROUP.getSelectedToggle().getUserData());
+        userName = USER_NAME_TEXT_FIELD.getText();
+        drawMove();
+    }
+
+    public void saveRanking(){
+        try {
+            FileWriter myWriter = new FileWriter("src/main/resources/output.txt", true);
+            if (game.getPoints() > 0){
+                myWriter.write(userName + ": " + game.getPoints() + "\n");
+            }
+            myWriter.close();
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
+
+    public void readRanking(){
+        try {
+            File myObj = new File("src/main/resources/output.txt");
+            Scanner myReader = new Scanner(myObj);
+            while (myReader.hasNextLine()) {
+                String data = myReader.nextLine();
+                HIGH_SCORE_LIST_VIEW.getItems().add(0, data);
+            }
+            myReader.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void stop(){
+        saveRanking();
     }
 
     @Override
     public void start(Stage primaryStage){
-        game = new GameEngine('o', 'x');
+        drawMainGame();
+        drawSettingsWindow();
 
-        drawGame();
+        BUTTON_NEW_GAME.setOnAction(e -> {
+            newGame();
+            primaryStage.setScene(mainScene);
+        });
 
-        Scene scene = new Scene(mainGrid, 800, 800, Color.rgb(0, 100, 148));
         primaryStage.setTitle("Tic-Tac-Toe");
-        primaryStage.setScene(scene);
+        primaryStage.setScene(settingsScene);
+        primaryStage.setX(400);
+        primaryStage.setX(400);
         primaryStage.show();
     }
 

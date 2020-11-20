@@ -10,6 +10,7 @@ public class GameEngine {
     private int userScore = 0;
     private int computerScore = 0;
     private boolean nextMove = true;
+    private boolean levelHard = true;
     private char[][] gameBoard = new char[3][3];
 
     public GameEngine(char user, char computer) {
@@ -73,7 +74,7 @@ public class GameEngine {
 
         Map<String, Boolean> winnerLinesMerged = new HashMap<>(userLine);
         computerLine.forEach((key, value) -> winnerLinesMerged
-                        .merge(key, value, (oldValue, newValue) -> oldValue || newValue));
+                        .merge(key, value, (firstValue, secondValue) -> firstValue || secondValue));
 
         return winnerLinesMerged;
     }
@@ -108,8 +109,9 @@ public class GameEngine {
     }
 
     public void computerMove(){
-        smartComputerMove();
-        // pick a field randomly if smart move impossible
+        if (levelHard) {
+            smartComputerMove();
+        }
         Random rand = new Random();
         while (nextMove){
             int row = rand.nextInt(3);
@@ -150,6 +152,23 @@ public class GameEngine {
     }
 
     public String getScoreBoard(){
-        return "User [" + userScore +"] : [" + computerScore + "] Computer ";
+        return " [" + userScore +"] : [" + computerScore + "] Computer ";
+    }
+
+    public long getPoints(){
+        long points = userScore - computerScore;
+        if (points < 0){
+            points = 0;
+        }
+        if (levelHard){
+            points = points * 100;
+        } else {
+            points = points * 10;
+        }
+        return points;
+    }
+
+    public void setLevelHard(boolean levelHard) {
+        this.levelHard = levelHard;
     }
 }
